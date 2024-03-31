@@ -11,7 +11,7 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     public function test_register_with_valid_data()
     {
         $user = [
@@ -82,5 +82,33 @@ class AuthTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJson(['message' => 'Invalid login details']);
+    }
+
+    public function test_logout()
+    {
+        $user = User::factory()->create(['password' => bcrypt('testpassword')]);
+
+        $response = $this->actingAs($user)->postJson('/api/login', [
+            'username' => $user->username,
+            'password' => 'testpassword',
+        ]);
+
+        $response->assertStatus(200);
+        $response = $this->actingAs($user)->postJson('/api/logout');
+        $response->assertStatus(200);
+    }
+
+    public function test_info()
+    {
+        $user = User::factory()->create(['password' => bcrypt('testpassword')]);
+
+        $response = $this->actingAs($user)->postJson('/api/login', [
+            'username' => $user->username,
+            'password' => 'testpassword',
+        ]);
+
+        $response->assertStatus(200);
+        $response = $this->actingAs($user)->getJson('/api/info');
+        $response->assertStatus(200);
     }
 }
