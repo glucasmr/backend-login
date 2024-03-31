@@ -2,29 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'username' => 'required|string|unique:users,username',
-            'email' => 'required|email|unique:users,email',
-            'password' => [
-                'required', 'confirmed',
-                Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-            ],
-        ]);
+        $request->validated($request->all());
 
         $user = User::create([
             'name' => $request->name,
@@ -36,22 +25,13 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User created successfully!',
             'data' => $user,
-            'token' => $user->createToken($user->username."'s ".'auth_token')->plainTextToken
+            'token' => $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken
         ]);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => [
-                'required', Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-            ],
-        ]);
+        $request->validated($request->all());
 
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
@@ -64,16 +44,20 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login successful!',
             'data' => $user,
-            'token' => $user->createToken($user->username."'s ".'auth_token')->plainTextToken
+            'token' => $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->tokens()->delete();
-
+        Auth::user()->tokens()->delete();
         return response()->json([
             'message' => 'Logged out successfully!'
         ]);
+    }
+
+    public function info()
+    {
+        return Auth::user();
     }
 }
