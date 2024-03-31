@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,11 +22,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json([
-            'message' => 'User created successfully!',
-            'data' => $user,
-            'token' => $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken
-        ]);
+        $token = $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken;
+
+        return new UserResource(['user' => $user,'message' => 'User registered successfully!', 'token' => $token]);
     }
 
     public function login(LoginRequest $request)
@@ -38,14 +36,11 @@ class AuthController extends Controller
                 'message' => 'Invalid login details'
             ], 401);
         }
+        $user = Auth::user();
+        Auth::user()->tokens()->delete();
+        $token = $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken;
 
-        $user = User::where('username', $request->username)->first();
-
-        return response()->json([
-            'message' => 'Login successful!',
-            'data' => $user,
-            'token' => $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken
-        ]);
+        return new UserResource(['user' => Auth::user(),'message' => 'Login successful!', 'token' => $token]);
     }
 
     public function logout()
@@ -58,6 +53,6 @@ class AuthController extends Controller
 
     public function info()
     {
-        return Auth::user();
+        return new UserResource(['user' => Auth::user()]);
     }
 }
