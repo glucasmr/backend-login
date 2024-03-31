@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -56,7 +56,7 @@ class AuthTest extends TestCase
     {
         User::factory()->create([
             'username' => 'testuser',
-            'password' => bcrypt('testpassword'),
+            'password' => Hash::make('testpassword'),
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -72,7 +72,7 @@ class AuthTest extends TestCase
     {
         User::factory()->create([
             'username' => 'testuser',
-            'password' => bcrypt('testpassword'),
+            'password' => Hash::make('testpassword'),
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -86,7 +86,7 @@ class AuthTest extends TestCase
 
     public function test_logout()
     {
-        $user = User::factory()->create(['password' => bcrypt('testpassword')]);
+        $user = User::factory()->create(['password' => Hash::make('testpassword')]);
 
         $response = $this->actingAs($user)->postJson('/api/login', [
             'username' => $user->username,
@@ -100,7 +100,7 @@ class AuthTest extends TestCase
 
     public function test_info()
     {
-        $user = User::factory()->create(['password' => bcrypt('testpassword')]);
+        $user = User::factory()->create(['password' => Hash::make('testpassword')]);
 
         $response = $this->actingAs($user)->postJson('/api/login', [
             'username' => $user->username,
