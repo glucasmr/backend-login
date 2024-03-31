@@ -13,7 +13,10 @@ class UserResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request)
+    
+    public static $wrap = null;
+
+     public function toArray($request)
     {
         return [
             'message' => $this->when(isset($this->resource['message']),function(){

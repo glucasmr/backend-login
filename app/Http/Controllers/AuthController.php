@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         $token = $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken;
 
-        return new UserResource(['user' => $user,'message' => 'User registered successfully!', 'token' => $token]);
+        return (new UserResource(['user' => $user,'message' => 'User registered successfully!', 'token' => $token]))->response()->setStatusCode(201);
     }
 
     public function login(LoginRequest $request)
@@ -40,7 +40,7 @@ class AuthController extends Controller
         Auth::user()->tokens()->delete();
         $token = $user->createToken($user->username . "'s " . 'auth_token')->plainTextToken;
 
-        return new UserResource(['user' => Auth::user(),'message' => 'Login successful!', 'token' => $token]);
+        return (new UserResource(['user' => Auth::user(),'message' => 'Login successful!', 'token' => $token]))->response()->setStatusCode(200);
     }
 
     public function logout()
@@ -48,11 +48,11 @@ class AuthController extends Controller
         Auth::user()->tokens()->delete();
         return response()->json([
             'message' => 'Logged out successfully!'
-        ]);
+        ], 200);
     }
 
     public function info()
     {
-        return new UserResource(['user' => Auth::user()]);
+        return (new UserResource(['user' => Auth::user()]))->response()->setStatusCode(200);
     }
 }
