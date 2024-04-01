@@ -1,0 +1,232 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Backend Login API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Registra um novo usuário",
+                "description": "Cria um novo usuário com as informações fornecidas",
+                "operationId": "register",
+                "requestBody": {
+                    "description": "Dados do usuário",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário registrado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro de validação"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Autentica um usuário",
+                "description": "Autentica um usuário com as credenciais fornecidas",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login bem-sucedido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Detalhes de login inválidos"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Desconecta o usuário atualmente autenticado",
+                "description": "Desconecta o usuário atualmente autenticado",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Desconectado com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/info": {
+            "get": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Obtém informações sobre o usuário atualmente autenticado",
+                "description": "Obtém informações sobre o usuário atualmente autenticado",
+                "operationId": "info",
+                "responses": {
+                    "200": {
+                        "description": "Informações do usuário",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginRequest": {
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "properties": {
+                    "username": {
+                        "description": "Nome de usuário",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "Senha do usuário",
+                        "type": "string",
+                        "format": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "required": [
+                    "name",
+                    "username",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Nome do usuário",
+                        "type": "string"
+                    },
+                    "username": {
+                        "description": "Nome de usuário",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Endereço de email do usuário",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "description": "Senha do usuário",
+                        "type": "string",
+                        "format": "password"
+                    },
+                    "password_confirmation": {
+                        "description": "Confirmação da senha do usuário",
+                        "type": "string",
+                        "format": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "user": {
+                        "properties": {
+                            "id": {
+                                "description": "ID do usuário",
+                                "type": "integer"
+                            },
+                            "name": {
+                                "description": "Nome do usuário",
+                                "type": "string"
+                            },
+                            "username": {
+                                "description": "Nome de usuário",
+                                "type": "string"
+                            },
+                            "email": {
+                                "description": "Endereço de email do usuário",
+                                "type": "string",
+                                "format": "email"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "message": {
+                        "description": "Mensagem de resposta",
+                        "type": "string"
+                    },
+                    "token": {
+                        "description": "Token de autenticação do usuário",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
