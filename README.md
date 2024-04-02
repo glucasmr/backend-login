@@ -46,7 +46,7 @@ Inicie os contêineres Docker com Laravel Sail 🐳:
 ./vendor/bin/sail up --build
 ```
 
-Gere a chave da aplicação Laravel 🔑:
+Em uma nova aba do terminal, no diretório raíz do projeto, gere a chave da aplicação Laravel 🔑:
 
 ```bash
 ./vendor/bin/sail artisan key:generate
@@ -93,6 +93,17 @@ A API estará acessível através do `http://localhost:80`.
 
 - **Erro**: Permissões ao executar o Sail ⚠️.
   - **Solução**: Execute os comandos do Sail com `sudo` ou adicione seu usuário ao grupo Docker.
+
+- **Erro**: Acesso negado ao acessar o Banco de dados 🛡️.
+  - **Solução**: Execute os comando no Sail:
+  ```bash
+  ./vendor/bin/sail down --rmi all -v
+  ```
+  - E execute novamente:
+  ```bash
+  ./vendor/bin/sail up --build
+  ```
+
 
 ## Contribuindo 🤝
 
